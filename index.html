@@ -99,6 +99,13 @@
       display:none;
     }
 
+    .hand-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:8px;
+    }
+
     .btn{
       min-height:70px;
       border-radius:20px;
@@ -115,6 +122,7 @@
       padding:10px 8px;
       cursor:pointer;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+      transition:.15s ease;
     }
 
     .btn-zone{
@@ -129,6 +137,12 @@
       border-color:#5ec8ff;
       background:linear-gradient(180deg,rgba(38,92,156,.96),rgba(23,70,130,.96));
       box-shadow:0 0 0 2px rgba(94,200,255,.14), 0 8px 20px rgba(94,200,255,.10);
+    }
+
+    .btn-hand.active{
+      border-color:#78d5ff;
+      background:linear-gradient(180deg,rgba(34,88,146,.96),rgba(24,66,116,.96));
+      box-shadow:0 0 0 2px rgba(120,213,255,.14), 0 8px 20px rgba(120,213,255,.10);
     }
 
     .btn-flight{
@@ -162,6 +176,13 @@
       border-color:var(--red-bd);
       color:#fff1f1;
       box-shadow:0 0 0 2px rgba(255,104,104,.12), 0 8px 18px rgba(255,104,104,.10);
+    }
+
+    .btn.disabled{
+      opacity:.34;
+      filter:grayscale(.35);
+      cursor:not-allowed;
+      pointer-events:none;
     }
 
     .legend{
@@ -279,7 +300,7 @@
         font-size:.95rem;
         padding:8px 6px;
       }
-      .grid-3{gap:8px}
+      .grid-3,.hand-row{gap:8px}
       .btn-flight{
         min-width:88px;
         min-height:56px;
@@ -295,6 +316,14 @@
     <div class="card">
       <h1>Diagnostic Ball Flight</h1>
       <p class="note">Rappel clé : la direction initiale dépend surtout de la face, alors que la courbure dépend surtout de la relation face / swing path.</p>
+    </div>
+
+    <div class="card">
+      <h2>0) Joueur</h2>
+      <div class="hand-row" id="handGrid">
+        <button class="btn btn-hand active" type="button" data-hand="right">Droitier</button>
+        <button class="btn btn-hand" type="button" data-hand="left">Gaucher</button>
+      </div>
     </div>
 
     <div class="card">
@@ -325,11 +354,11 @@
         <button class="btn btn-flight red" type="button">Slice</button>
         <button class="btn btn-flight red" type="button">Push</button>
       </div>
-      <p class="legend">Vert = neutre. Jaune = courbe contrôlée. Rouge = erreur ou courbe excessive.</p>
+      <p class="legend">Vert = neutre. Jaune = courbe contrôlée. Rouge = erreur ou courbe excessive. Certaines combinaisons impossibles sont automatiquement bloquées.</p>
     </div>
 
     <div class="card" id="result">
-      <p class="empty">Choisis une direction du coup et une forme du coup.</p>
+      <p class="empty">Choisis le type de joueur, la direction du coup et la forme du coup.</p>
     </div>
 
     <button class="reset" id="resetBtn" type="button">Réinitialiser</button>
@@ -339,25 +368,51 @@
   <script>
     let selectedZone = "";
     let selectedFlight = "";
+    let selectedHand = "right";
 
     const zoneButtons = document.querySelectorAll("#zoneGrid .btn-zone");
     const flightButtons = document.querySelectorAll("#flightGrid .btn-flight");
+    const handButtons = document.querySelectorAll("#handGrid .btn-hand");
     const resultBox = document.getElementById("result");
+
+    handButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        handButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedHand = btn.dataset.hand;
+        updateFlightAvailability();
+
+        if (selectedFlight && !isFlightAllowed(selectedZone, selectedFlight)) {
+          selectedFlight = "";
+          flightButtons.forEach(b => b.classList.remove("active"));
+        }
+        render();
+      });
+    });
 
     zoneButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         zoneButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         selectedZone = btn.innerText.trim();
+        updateFlightAvailability();
+
+        if (selectedFlight && !isFlightAllowed(selectedZone, selectedFlight)) {
+          selectedFlight = "";
+          flightButtons.forEach(b => b.classList.remove("active"));
+        }
         render();
       });
     });
 
     flightButtons.forEach(btn => {
       btn.addEventListener("click", () => {
+        const flight = btn.innerText.trim();
+        if (!isFlightAllowed(selectedZone, flight)) return;
+
         flightButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        selectedFlight = btn.innerText.trim();
+        selectedFlight = flight;
         render();
       });
     });
@@ -365,14 +420,70 @@
     document.getElementById("resetBtn").addEventListener("click", () => {
       selectedZone = "";
       selectedFlight = "";
+      selectedHand = "right";
+
       zoneButtons.forEach(b => b.classList.remove("active"));
-      flightButtons.forEach(b => b.classList.remove("active"));
-      resultBox.innerHTML = `<p class="empty">Choisis une direction du coup et une forme du coup.</p>`;
+      flightButtons.forEach(b => {
+        b.classList.remove("active");
+        b.classList.remove("disabled");
+      });
+
+      handButtons.forEach(b => b.classList.remove("active"));
+      document.querySelector('[data-hand="right"]').classList.add("active");
+
+      resultBox.innerHTML = `<p class="empty">Choisis le type de joueur, la direction du coup et la forme du coup.</p>`;
     });
 
+    function sideOfZone(zone){
+      if (!zone) return "none";
+      if (zone.includes("gauche")) return "left";
+      if (zone.includes("droite")) return "right";
+      return "center";
+    }
+
+    function playerSideMeaning(side){
+      if (selectedHand === "right") return side;
+      if (side === "left") return "right";
+      if (side === "right") return "left";
+      return "center";
+    }
+
+    function isFlightAllowed(zone, flight){
+      if (!zone) return true;
+
+      const side = playerSideMeaning(sideOfZone(zone));
+
+      if (flight === "Pull" || flight === "Hook") return side === "left";
+      if (flight === "Push" || flight === "Slice") return side === "right";
+      if (flight === "Droite") return side === "center";
+
+      return true;
+    }
+
+    function updateFlightAvailability(){
+      flightButtons.forEach(btn => {
+        const flight = btn.innerText.trim();
+        if (!selectedZone || isFlightAllowed(selectedZone, flight)) {
+          btn.classList.remove("disabled");
+        } else {
+          btn.classList.add("disabled");
+        }
+      });
+    }
+
+    function sideTextForHand(directionWord){
+      if (selectedHand === "right") return directionWord;
+      if (directionWord === "gauche") return "droite";
+      if (directionWord === "droite") return "gauche";
+      return directionWord;
+    }
+
     function zoneInfo(zone){
-      if(zone.includes("gauche")) return "Le coup finit du côté gauche.";
-      if(zone.includes("droite")) return "Le coup finit du côté droit.";
+      const raw = sideOfZone(zone);
+      const side = playerSideMeaning(raw);
+
+      if(side === "left") return "Le coup finit du côté gauche.";
+      if(side === "right") return "Le coup finit du côté droit.";
       return "Le coup finit près de la ligne cible.";
     }
 
@@ -388,16 +499,19 @@
       let tip = "";
       let summary = "";
 
+      const leftWord = sideTextForHand("gauche");
+      const rightWord = sideTextForHand("droite");
+
       if(flight === "Pull"){
-        summary = "Un pull est un coup qui part et reste à gauche, souvent sans grande courbure.";
+        summary = `Un pull est un coup qui part et reste à ${leftWord}, souvent sans grande courbure.`;
         causes = [
-          "Face probablement orientée à gauche de la cible à l’impact.",
-          "Swing path souvent vers la gauche.",
+          `Face probablement orientée à ${leftWord} de la cible à l’impact.`,
+          `Swing path souvent vers la ${leftWord}.`,
           "Over the top fréquent.",
           "Épaules ou alignement possiblement trop ouverts."
         ];
         questions = [
-          "Mes épaules visaient-elles trop à gauche ?",
+          `Mes épaules visaient-elles trop à ${leftWord} ?`,
           "Ai-je eu la sensation de descendre par-dessus ?",
           "Le club est-il passé extérieur → intérieur ?"
         ];
@@ -405,9 +519,9 @@
       }
 
       if(flight === "Push"){
-        summary = "Un push est un coup qui part et reste à droite, souvent sans grande courbure.";
+        summary = `Un push est un coup qui part et reste à ${rightWord}, souvent sans grande courbure.`;
         causes = [
-          "Face probablement orientée à droite de la cible à l’impact.",
+          `Face probablement orientée à ${rightWord} de la cible à l’impact.`,
           "Swing path possiblement trop intérieur → extérieur.",
           "Rotation du corps incomplète.",
           "Face laissée ouverte trop longtemps."
@@ -421,7 +535,7 @@
       }
 
       if(flight === "Hook"){
-        summary = "Le hook est une courbe marquée vers la gauche.";
+        summary = `Le hook est une courbe marquée vers la ${leftWord}.`;
         causes = [
           "Face très fermée par rapport au swing path.",
           "Swing path souvent intérieur → extérieur fort.",
@@ -436,7 +550,7 @@
       }
 
       if(flight === "Slice"){
-        summary = "Le slice est une courbe marquée vers la droite.";
+        summary = `Le slice est une courbe marquée vers la ${rightWord}.`;
         causes = [
           "Face ouverte à l’impact.",
           "Swing path extérieur → intérieur.",
@@ -451,7 +565,7 @@
       }
 
       if(flight === "Draw"){
-        summary = "Le draw est une petite courbe contrôlée vers la gauche.";
+        summary = `Le draw est une petite courbe contrôlée vers la ${leftWord}.`;
         causes = [
           "Face légèrement fermée par rapport au swing path.",
           "Swing path intérieur → extérieur modéré.",
@@ -466,7 +580,7 @@
       }
 
       if(flight === "Fade"){
-        summary = "Le fade est une petite courbe contrôlée vers la droite.";
+        summary = `Le fade est une petite courbe contrôlée vers la ${rightWord}.`;
         causes = [
           "Face légèrement ouverte par rapport au swing path.",
           "Swing path légèrement extérieur → intérieur.",
@@ -474,7 +588,7 @@
         ];
         questions = [
           "Mon fade est-il voulu et contrôlé ?",
-          "Mon path va-t-il légèrement vers la gauche ?",
+          "Mon path va-t-il légèrement vers le côté opposé à la courbe voulue ?",
           "Ma face reste-t-elle seulement un peu ouverte ?"
         ];
         tip = "Garder une petite différence face / path sans l’exagérer.";
@@ -510,16 +624,18 @@
 
     function render(){
       if(!selectedZone || !selectedFlight){
-        resultBox.innerHTML = `<p class="empty">Choisis une direction du coup et une forme du coup.</p>`;
+        resultBox.innerHTML = `<p class="empty">Choisis le type de joueur, la direction du coup et la forme du coup.</p>`;
         return;
       }
 
       const d = buildContent(selectedZone, selectedFlight);
+      const handLabel = selectedHand === "right" ? "Droitier" : "Gaucher";
 
       resultBox.innerHTML = `
         <h2 class="result-title">Diagnostic</h2>
 
         <div class="chips">
+          <span class="chip">${handLabel}</span>
           <span class="chip">${selectedZone}</span>
           <span class="chip">${selectedFlight}</span>
         </div>
@@ -556,7 +672,7 @@
 
         <div class="callout"><strong>Piste de travail :</strong> ${d.tip}</div>
 
-        <p class="note">Rappel pédagogique : la face influence surtout le départ, tandis que la courbure dépend surtout de la relation entre la face et le swing path.</p>
+        <p class="note">Le mode ${handLabel.toLowerCase()} inverse automatiquement la lecture gauche / droite dans les commentaires.</p>
       `;
     }
   </script>
