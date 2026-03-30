@@ -1,317 +1,551 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Diagnostic Ball Flight</title>
-<style>
-:root{
-  --bg:#f3f6f2;
-  --card:#ffffff;
-  --text:#17321f;
-  --muted:#5f7066;
-  --border:#d7e2d8;
-  --green-bg:#e7f6ea;
-  --green-bd:#2e7d32;
-  --yellow-bg:#fff7db;
-  --yellow-bd:#d4a100;
-  --red-bg:#fde8e8;
-  --red-bd:#c62828;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-}
-body{padding:12px}
-.wrap{max-width:760px;margin:0 auto}
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:12px;
-  box-shadow:0 2px 10px rgba(0,0,0,.04);
-}
-h1{margin:0 0 8px;font-size:1.55rem;line-height:1.1}
-h2{margin:0 0 10px;font-size:1.15rem}
-p{margin:0;line-height:1.45;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.flight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.btn{
-  width:100%;
-  min-height:68px;
-  border:2px solid var(--border);
-  border-radius:16px;
-  background:#fbfdfb;
-  color:var(--text);
-  font-size:1.02rem;
-  font-weight:700;
-  padding:10px 8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  cursor:pointer;
-  user-select:none;
-}
-.btn.active-zone{
-  background:#edf7ef;
-  border-color:#6ca874;
-}
-.btn.active-flight.green{
-  background:var(--green-bg);
-  border-color:var(--green-bd);
-  color:#1f5e28;
-}
-.btn.active-flight.yellow{
-  background:var(--yellow-bg);
-  border-color:var(--yellow-bd);
-  color:#8a6900;
-}
-.btn.active-flight.red{
-  background:var(--red-bg);
-  border-color:var(--red-bd);
-  color:#9b1d1d;
-}
-.result{line-height:1.5}
-.tag{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:999px;
-  margin:0 6px 8px 0;
-  font-size:.82rem;
-  font-weight:700;
-  background:#f1f6f2;
-  border:1px solid var(--border);
-}
-.section{margin-top:12px}
-ul{margin:8px 0 0 0;padding-left:18px}
-li{margin:6px 0}
-.callout{
-  margin-top:12px;
-  padding:12px;
-  border-radius:14px;
-  background:#f7faf8;
-  border:1px solid var(--border);
-}
-.small{margin-top:8px;font-size:.9rem}
-.reset{
-  margin-top:12px;
-  width:100%;
-  min-height:50px;
-  border:none;
-  border-radius:14px;
-  background:#eaf1eb;
-  color:var(--text);
-  font-size:1rem;
-  font-weight:700;
-  cursor:pointer;
-}
-@media (max-width: 480px){
-  body{padding:10px}
-  .card{padding:12px;border-radius:16px}
-  h1{font-size:1.35rem}
-  h2{font-size:1.05rem}
-  .btn{
-    min-height:60px;
-    font-size:.97rem;
-    border-radius:14px;
-    padding:8px 6px;
-  }
-  .grid,.flight-grid{gap:7px}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Diagnostic Ball Flight</title>
+  <style>
+    :root{
+      --bg:#031a36;
+      --bg2:#06244a;
+      --panel:rgba(9,36,78,.92);
+      --panel2:rgba(12,45,92,.95);
+      --border:rgba(93,150,220,.22);
+      --text:#eef6ff;
+      --muted:#a9bfd8;
+      --cyan:#67d7ff;
+      --green:#6ee7a4;
+      --green-bg:rgba(56,199,89,.18);
+      --green-bd:#31b955;
+      --yellow:#ffd45e;
+      --yellow-bg:rgba(255,212,94,.18);
+      --yellow-bd:#e6b93a;
+      --red:#ff8d8d;
+      --red-bg:rgba(255,102,102,.18);
+      --red-bd:#ff6868;
+      --shadow:0 14px 28px rgba(0,0,0,.28);
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, rgba(50,110,255,.18), transparent 28%),
+        linear-gradient(180deg,var(--bg),#021126 100%);
+    }
+
+    body{
+      padding:14px 12px 28px;
+    }
+
+    .wrap{
+      max-width:760px;
+      margin:0 auto;
+    }
+
+    .card{
+      background:linear-gradient(180deg,var(--panel),var(--panel2));
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      margin-bottom:14px;
+      backdrop-filter: blur(6px);
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:1.7rem;
+      line-height:1.05;
+      letter-spacing:.2px;
+    }
+
+    h2{
+      margin:0 0 12px;
+      font-size:1.18rem;
+      line-height:1.15;
+    }
+
+    p{
+      margin:0;
+      line-height:1.45;
+      color:var(--muted);
+    }
+
+    .lead{
+      font-size:.98rem;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .flight-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+
+    .btn{
+      width:100%;
+      min-height:70px;
+      border-radius:20px;
+      border:2px solid rgba(84,139,206,.24);
+      background:linear-gradient(180deg,rgba(14,42,85,.92),rgba(8,29,60,.92));
+      color:var(--text);
+      font-size:1rem;
+      font-weight:800;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:10px 8px;
+      cursor:pointer;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+    .btn:active{
+      transform:scale(.985);
+    }
+
+    .btn-zone.active{
+      border-color:#5ec8ff;
+      background:linear-gradient(180deg,rgba(38,92,156,.96),rgba(23,70,130,.96));
+      box-shadow:0 0 0 2px rgba(94,200,255,.14), 0 8px 20px rgba(94,200,255,.10);
+    }
+
+    .btn-flight.active.green{
+      background:linear-gradient(180deg,rgba(34,120,66,.95),rgba(24,86,47,.95));
+      border-color:var(--green);
+      color:#ebfff2;
+      box-shadow:0 0 0 2px rgba(110,231,164,.12), 0 8px 18px rgba(110,231,164,.12);
+    }
+
+    .btn-flight.active.yellow{
+      background:linear-gradient(180deg,rgba(129,98,19,.96),rgba(101,76,13,.96));
+      border-color:var(--yellow);
+      color:#fff9e8;
+      box-shadow:0 0 0 2px rgba(255,212,94,.12), 0 8px 18px rgba(255,212,94,.10);
+    }
+
+    .btn-flight.active.red{
+      background:linear-gradient(180deg,rgba(140,36,36,.96),rgba(102,24,24,.96));
+      border-color:var(--red-bd);
+      color:#fff1f1;
+      box-shadow:0 0 0 2px rgba(255,104,104,.12), 0 8px 18px rgba(255,104,104,.10);
+    }
+
+    .legend{
+      margin-top:10px;
+      font-size:.9rem;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-bottom:6px;
+    }
+
+    .chip{
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:800;
+      color:#dff4ff;
+      background:rgba(91,160,224,.12);
+      border:1px solid rgba(99,169,238,.22);
+    }
+
+    .section{
+      margin-top:14px;
+    }
+
+    ul{
+      margin:8px 0 0;
+      padding-left:18px;
+    }
+
+    li{
+      margin:7px 0;
+      line-height:1.4;
+      color:#edf5ff;
+    }
+
+    .callout{
+      margin-top:14px;
+      padding:14px;
+      border-radius:18px;
+      background:linear-gradient(180deg,rgba(16,87,100,.58),rgba(11,66,76,.58));
+      border:1px solid rgba(101,214,238,.22);
+      color:#f4fdff;
+      line-height:1.45;
+    }
+
+    .note{
+      margin-top:14px;
+      font-size:.94rem;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .reset{
+      width:100%;
+      min-height:54px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(180deg,rgba(25,65,120,.95),rgba(20,51,97,.95));
+      color:#eef6ff;
+      font-size:1rem;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+    }
+
+    .result-title{
+      margin:0 0 10px;
+      font-size:1.22rem;
+      color:#ffffff;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.5;
+    }
+
+    .mini-kpi{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .kpi{
+      border-radius:18px;
+      padding:12px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(111,166,227,.14);
+    }
+
+    .kpi-label{
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:700;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+      margin-bottom:6px;
+    }
+
+    .kpi-value{
+      color:#ffffff;
+      font-size:1rem;
+      font-weight:800;
+      line-height:1.25;
+    }
+
+    @media (max-width:560px){
+      body{padding:10px 10px 24px}
+      .card{padding:14px;border-radius:22px}
+      h1{font-size:1.48rem}
+      h2{font-size:1.08rem}
+      .btn{
+        min-height:62px;
+        border-radius:18px;
+        font-size:.95rem;
+        padding:8px 6px;
+      }
+      .grid-3,.flight-grid{gap:8px}
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <div class="card">
-    <h1>Diagnostic Ball Flight</h1>
-    <p>Départ = face. Courbure = relation face / swing path.</p>
+    <div class="card">
+      <h1>Diagnostic Ball Flight</h1>
+      <p class="lead">Lecture simple pour tes élèves : <strong>direction du coup observé</strong> + <strong>forme du coup</strong> = causes les plus probables.</p>
+      <p class="note">Rappel clé : la direction initiale dépend surtout de la face, alors que la courbure dépend surtout de la relation face / swing path.</p>
+    </div>
+
+    <div class="card">
+      <h2>1) Direction du coup</h2>
+      <div class="grid-3" id="zoneGrid">
+        <button class="btn btn-zone" type="button">Haut gauche</button>
+        <button class="btn btn-zone" type="button">Haut centre</button>
+        <button class="btn btn-zone" type="button">Haut droite</button>
+
+        <button class="btn btn-zone" type="button">Milieu gauche</button>
+        <button class="btn btn-zone" type="button">Milieu centre</button>
+        <button class="btn btn-zone" type="button">Milieu droite</button>
+
+        <button class="btn btn-zone" type="button">Bas gauche</button>
+        <button class="btn btn-zone" type="button">Bas centre</button>
+        <button class="btn btn-zone" type="button">Bas droite</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2) Forme du coup / ball flight</h2>
+      <div class="flight-grid" id="flightGrid">
+        <button class="btn btn-flight red" type="button">Pull</button>
+        <button class="btn btn-flight red" type="button">Hook</button>
+        <button class="btn btn-flight red" type="button">Push</button>
+
+        <button class="btn btn-flight yellow" type="button">Draw</button>
+        <button class="btn btn-flight green" type="button">Droite</button>
+        <button class="btn btn-flight yellow" type="button">Fade</button>
+
+        <div></div>
+        <button class="btn btn-flight red" type="button">Slice</button>
+        <div></div>
+      </div>
+      <p class="legend">Vert = neutre. Jaune = courbe contrôlée. Rouge = erreur ou courbe excessive.</p>
+    </div>
+
+    <div class="card" id="result">
+      <p class="empty">Choisis une direction du coup et une forme du coup.</p>
+    </div>
+
+    <button class="reset" id="resetBtn" type="button">Réinitialiser</button>
+
   </div>
 
-  <div class="card">
-    <h2>1) Direction de départ</h2>
-    <div class="grid" id="startGrid">
-      <button class="btn" type="button">Haut gauche</button>
-      <button class="btn" type="button">Haut centre</button>
-      <button class="btn" type="button">Haut droite</button>
-      <button class="btn" type="button">Milieu gauche</button>
-      <button class="btn" type="button">Milieu centre</button>
-      <button class="btn" type="button">Milieu droite</button>
-      <button class="btn" type="button">Bas gauche</button>
-      <button class="btn" type="button">Bas centre</button>
-      <button class="btn" type="button">Bas droite</button>
-    </div>
-  </div>
+  <script>
+    let selectedZone = "";
+    let selectedFlight = "";
 
-  <div class="card">
-    <h2>2) Ball flight</h2>
-    <div class="flight-grid" id="flightGrid">
-      <button class="btn red" type="button">Hook</button>
-      <button class="btn yellow" type="button">Draw</button>
-      <button class="btn green" type="button">Droite</button>
-      <button class="btn yellow" type="button">Fade</button>
-      <button class="btn red" type="button">Slice</button>
-    </div>
-    <p class="small">Couleurs au clic : vert = droit, jaune = fade/draw, rouge = hook/slice.</p>
-  </div>
+    const zoneButtons = document.querySelectorAll("#zoneGrid .btn-zone");
+    const flightButtons = document.querySelectorAll("#flightGrid .btn-flight");
+    const resultBox = document.getElementById("result");
 
-  <div class="card result" id="result">
-    Choisis une direction et un ball flight.
-  </div>
+    zoneButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        zoneButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedZone = btn.innerText.trim();
+        render();
+      });
+    });
 
-  <button class="reset" id="resetBtn" type="button">Réinitialiser</button>
+    flightButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        flightButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedFlight = btn.innerText.trim();
+        render();
+      });
+    });
 
-</div>
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      selectedZone = "";
+      selectedFlight = "";
+      zoneButtons.forEach(b => b.classList.remove("active"));
+      flightButtons.forEach(b => b.classList.remove("active"));
+      resultBox.innerHTML = `<p class="empty">Choisis une direction du coup et une forme du coup.</p>`;
+    });
 
-<script>
-let start = "";
-let flight = "";
+    function zoneInfo(zone){
+      if(zone.includes("gauche")) return "Le coup finit du côté gauche.";
+      if(zone.includes("droite")) return "Le coup finit du côté droit.";
+      return "Le coup finit près de la ligne cible.";
+    }
 
-document.querySelectorAll("#startGrid .btn").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll("#startGrid .btn").forEach(b => b.classList.remove("active-zone"));
-    btn.classList.add("active-zone");
-    start = btn.innerText;
-    update();
-  };
-});
+    function heightInfo(zone){
+      if(zone.includes("Haut")) return "Trajectoire plutôt haute.";
+      if(zone.includes("Bas")) return "Trajectoire plutôt basse.";
+      return "Trajectoire à hauteur moyenne.";
+    }
 
-document.querySelectorAll("#flightGrid .btn").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll("#flightGrid .btn").forEach(b => b.classList.remove("active-flight"));
-    btn.classList.add("active-flight");
-    flight = btn.innerText;
-    update();
-  };
-});
+    function buildContent(zone, flight){
+      let causes = [];
+      let questions = [];
+      let tip = "";
+      let summary = "";
 
-document.getElementById("resetBtn").onclick = () => {
-  start = "";
-  flight = "";
-  document.querySelectorAll("#startGrid .btn").forEach(b => b.classList.remove("active-zone"));
-  document.querySelectorAll("#flightGrid .btn").forEach(b => b.classList.remove("active-flight"));
-  document.getElementById("result").innerHTML = "Choisis une direction et un ball flight.";
-};
+      if(flight === "Pull"){
+        summary = "Un pull est un coup qui part et reste à gauche, souvent sans grande courbure.";
+        causes = [
+          "Face probablement orientée à gauche de la cible à l’impact.",
+          "Swing path souvent vers la gauche.",
+          "Over the top fréquent.",
+          "Épaules ou alignement possiblement trop ouverts."
+        ];
+        questions = [
+          "Mes épaules visaient-elles trop à gauche ?",
+          "Ai-je eu la sensation de descendre par-dessus ?",
+          "Le club est-il passé extérieur → intérieur ?"
+        ];
+        tip = "Travailler un swing path plus neutre, calmer le over the top et vérifier l’alignement.";
+      }
 
-function update() {
-  if (!start || !flight) {
-    document.getElementById("result").innerHTML = "Choisis une direction et un ball flight.";
-    return;
-  }
+      if(flight === "Push"){
+        summary = "Un push est un coup qui part et reste à droite, souvent sans grande courbure.";
+        causes = [
+          "Face probablement orientée à droite de la cible à l’impact.",
+          "Swing path possiblement trop intérieur → extérieur.",
+          "Rotation du corps incomplète.",
+          "Face laissée ouverte trop longtemps."
+        ];
+        questions = [
+          "Ai-je laissé la face ouverte ?",
+          "Mon club vient-il trop de l’intérieur ?",
+          "Ai-je arrêté de tourner à travers l’impact ?"
+        ];
+        tip = "Ramener la face plus square et garder une rotation complète du corps.";
+      }
 
-  let text = "";
+      if(flight === "Hook"){
+        summary = "Le hook est une courbe marquée vers la gauche.";
+        causes = [
+          "Face très fermée par rapport au swing path.",
+          "Swing path souvent intérieur → extérieur fort.",
+          "Mains ou avant-bras qui ferment la face trop vite."
+        ];
+        questions = [
+          "Mes mains tournent-elles trop vite ?",
+          "Mon grip est-il trop fort ?",
+          "Mon path vient-il trop de l’intérieur ?"
+        ];
+        tip = "Stabiliser la face et réduire l’excès de swing path intérieur → extérieur.";
+      }
 
-  if (flight === "Slice") {
-    text = `
-    <h2>Diagnostic</h2>
-    <div class="tag">${start}</div><div class="tag">Slice</div>
-    <div class="section"><strong>Causes probables :</strong>
-      <ul>
-        <li>Face ouverte à l’impact</li>
-        <li>Swing path extérieur → intérieur</li>
-        <li>Over the top très probable</li>
-      </ul>
-    </div>
-    <div class="section"><strong>Questions à te poser :</strong>
-      <ul>
-        <li>Est-ce que je coupe la balle ?</li>
-        <li>Est-ce que ma face reste ouverte ?</li>
-        <li>Est-ce que je descends trop par-dessus ?</li>
-      </ul>
-    </div>
-    <div class="callout"><strong>Piste :</strong> Réduire le over the top et apprendre à présenter une face moins ouverte.</div>
-    `;
-  }
+      if(flight === "Slice"){
+        summary = "Le slice est une courbe marquée vers la droite.";
+        causes = [
+          "Face ouverte à l’impact.",
+          "Swing path extérieur → intérieur.",
+          "Over the top très probable."
+        ];
+        questions = [
+          "Est-ce que je coupe la balle ?",
+          "Ma face reste-t-elle ouverte ?",
+          "Est-ce que je descends trop par-dessus ?"
+        ];
+        tip = "Réduire le over the top et apprendre à présenter une face moins ouverte.";
+      }
 
-  if (flight === "Hook") {
-    text = `
-    <h2>Diagnostic</h2>
-    <div class="tag">${start}</div><div class="tag">Hook</div>
-    <div class="section"><strong>Causes probables :</strong>
-      <ul>
-        <li>Face fermée à l’impact</li>
-        <li>Swing path intérieur → extérieur fort</li>
-        <li>Fermeture de face trop rapide</li>
-      </ul>
-    </div>
-    <div class="section"><strong>Questions à te poser :</strong>
-      <ul>
-        <li>Est-ce que je ferme trop la face ?</li>
-        <li>Est-ce que mon path est trop intérieur ?</li>
-        <li>Mes mains tournent-elles trop vite ?</li>
-      </ul>
-    </div>
-    <div class="callout"><strong>Piste :</strong> Stabiliser la face et réduire l’excès de path intérieur → extérieur.</div>
-    `;
-  }
+      if(flight === "Draw"){
+        summary = "Le draw est une petite courbe contrôlée vers la gauche.";
+        causes = [
+          "Face légèrement fermée par rapport au swing path.",
+          "Swing path intérieur → extérieur modéré.",
+          "Relation face / path bien gérée si la courbe reste légère."
+        ];
+        questions = [
+          "Le club vient-il légèrement de l’intérieur ?",
+          "Mon draw est-il contrôlé ou trop fort ?",
+          "Ma face ferme-t-elle juste assez ?"
+        ];
+        tip = "Garder un path intérieur → extérieur modéré avec une face stable.";
+      }
 
-  if (flight === "Fade") {
-    text = `
-    <h2>Diagnostic</h2>
-    <div class="tag">${start}</div><div class="tag">Fade</div>
-    <div class="section"><strong>Causes probables :</strong>
-      <ul>
-        <li>Face légèrement ouverte</li>
-        <li>Swing path légèrement extérieur → intérieur</li>
-      </ul>
-    </div>
-    <div class="section"><strong>Questions à te poser :</strong>
-      <ul>
-        <li>Mon fade est-il contrôlé ?</li>
-        <li>Mon path va-t-il un peu vers la gauche ?</li>
-      </ul>
-    </div>
-    <div class="callout"><strong>Piste :</strong> Garder une petite différence face / path sans l’exagérer.</div>
-    `;
-  }
+      if(flight === "Fade"){
+        summary = "Le fade est une petite courbe contrôlée vers la droite.";
+        causes = [
+          "Face légèrement ouverte par rapport au swing path.",
+          "Swing path légèrement extérieur → intérieur.",
+          "Courbure maîtrisée si l’écart face / path reste petit."
+        ];
+        questions = [
+          "Mon fade est-il voulu et contrôlé ?",
+          "Mon path va-t-il légèrement vers la gauche ?",
+          "Ma face reste-t-elle seulement un peu ouverte ?"
+        ];
+        tip = "Garder une petite différence face / path sans l’exagérer.";
+      }
 
-  if (flight === "Draw") {
-    text = `
-    <h2>Diagnostic</h2>
-    <div class="tag">${start}</div><div class="tag">Draw</div>
-    <div class="section"><strong>Causes probables :</strong>
-      <ul>
-        <li>Face légèrement fermée par rapport au path</li>
-        <li>Swing path intérieur → extérieur</li>
-      </ul>
-    </div>
-    <div class="section"><strong>Questions à te poser :</strong>
-      <ul>
-        <li>Le club vient-il un peu de l’intérieur ?</li>
-        <li>Mon draw est-il contrôlé ou trop prononcé ?</li>
-      </ul>
-    </div>
-    <div class="callout"><strong>Piste :</strong> Garder un path intérieur → extérieur modéré avec une face stable.</div>
-    `;
-  }
+      if(flight === "Droite"){
+        summary = "Le coup droit indique une face et un swing path très proches.";
+        causes = [
+          "Face et swing path bien alignés.",
+          "Bon contrôle global de l’impact.",
+          "Contact probablement plus neutre."
+        ];
+        questions = [
+          "Qu’est-ce que j’ai bien fait sur ce coup ?",
+          "Puis-je reproduire cette sensation ?",
+          "Ma routine était-elle meilleure ?"
+        ];
+        tip = "Mémoriser la sensation du bon coup et la routine associée.";
+      }
 
-  if (flight === "Droite") {
-    text = `
-    <h2>Diagnostic</h2>
-    <div class="tag">${start}</div><div class="tag">Droite</div>
-    <div class="section"><strong>Causes probables :</strong>
-      <ul>
-        <li>Face et swing path bien alignés</li>
-        <li>Bon contrôle global de l’impact</li>
-      </ul>
-    </div>
-    <div class="section"><strong>Questions à te poser :</strong>
-      <ul>
-        <li>Qu’est-ce que j’ai bien fait sur ce coup ?</li>
-        <li>Puis-je reproduire cette sensation ?</li>
-      </ul>
-    </div>
-    <div class="callout"><strong>Piste :</strong> Mémoriser la sensation du bon coup et la routine associée.</div>
-    `;
-  }
+      if(zone.includes("Haut")){
+        causes.push("La balle semble sortir assez haute, donc loft dynamique possiblement plus élevé.");
+        questions.push("Ai-je ajouté trop de loft dynamique ?");
+      }
 
-  document.getElementById("result").innerHTML = text;
-}
-</script>
+      if(zone.includes("Bas")){
+        causes.push("La balle semble sortir plus basse, donc loft dynamique possiblement réduit ou contact plus bas dans la face.");
+        questions.push("Le contact était-il trop bas dans la face ?");
+      }
+
+      return { summary, causes, questions, tip };
+    }
+
+    function render(){
+      if(!selectedZone || !selectedFlight){
+        resultBox.innerHTML = `<p class="empty">Choisis une direction du coup et une forme du coup.</p>`;
+        return;
+      }
+
+      const d = buildContent(selectedZone, selectedFlight);
+
+      resultBox.innerHTML = `
+        <h2 class="result-title">Diagnostic</h2>
+
+        <div class="chips">
+          <span class="chip">${selectedZone}</span>
+          <span class="chip">${selectedFlight}</span>
+        </div>
+
+        <div class="mini-kpi">
+          <div class="kpi">
+            <div class="kpi-label">Lecture latérale</div>
+            <div class="kpi-value">${zoneInfo(selectedZone)}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Lecture hauteur</div>
+            <div class="kpi-value">${heightInfo(selectedZone)}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <strong>Lecture du coup :</strong>
+          <p style="margin-top:8px">${d.summary}</p>
+        </div>
+
+        <div class="section">
+          <strong>Causes probables :</strong>
+          <ul>
+            ${d.causes.map(c => `<li>${c}</li>`).join("")}
+          </ul>
+        </div>
+
+        <div class="section">
+          <strong>Questions à se poser :</strong>
+          <ul>
+            ${d.questions.map(q => `<li>${q}</li>`).join("")}
+          </ul>
+        </div>
+
+        <div class="callout"><strong>Piste de travail :</strong> ${d.tip}</div>
+
+        <p class="note">Rappel pédagogique : la face influence surtout le départ, tandis que la courbure dépend surtout de la relation entre la face et le swing path.</p>
+      `;
+    }
+  </script>
 </body>
 </html>
