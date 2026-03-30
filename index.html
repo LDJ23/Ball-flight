@@ -13,15 +13,9 @@
       --border:rgba(93,150,220,.22);
       --text:#eef6ff;
       --muted:#a9bfd8;
-      --cyan:#67d7ff;
       --green:#6ee7a4;
-      --green-bg:rgba(56,199,89,.18);
-      --green-bd:#31b955;
       --yellow:#ffd45e;
-      --yellow-bg:rgba(255,212,94,.18);
-      --yellow-bd:#e6b93a;
       --red:#ff8d8d;
-      --red-bg:rgba(255,102,102,.18);
       --red-bd:#ff6868;
       --shadow:0 14px 28px rgba(0,0,0,.28);
     }
@@ -79,8 +73,11 @@
       color:var(--muted);
     }
 
-    .lead{
-      font-size:.98rem;
+    .note{
+      margin-top:10px;
+      font-size:.94rem;
+      color:var(--muted);
+      line-height:1.45;
     }
 
     .grid-3{
@@ -89,10 +86,16 @@
       gap:10px;
     }
 
-    .flight-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
+    .flight-row{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:6px;
+      scroll-snap-type:x mandatory;
+    }
+
+    .flight-row::-webkit-scrollbar{
+      display:none;
     }
 
     .btn{
@@ -122,6 +125,15 @@
       border-color:#5ec8ff;
       background:linear-gradient(180deg,rgba(38,92,156,.96),rgba(23,70,130,.96));
       box-shadow:0 0 0 2px rgba(94,200,255,.14), 0 8px 20px rgba(94,200,255,.10);
+    }
+
+    .btn-flight{
+      flex:0 0 auto;
+      min-width:95px;
+      min-height:60px;
+      font-size:.95rem;
+      border-radius:18px;
+      scroll-snap-align:center;
     }
 
     .btn-flight.active.green{
@@ -194,13 +206,6 @@
       line-height:1.45;
     }
 
-    .note{
-      margin-top:14px;
-      font-size:.94rem;
-      color:var(--muted);
-      line-height:1.45;
-    }
-
     .reset{
       width:100%;
       min-height:54px;
@@ -267,7 +272,12 @@
         font-size:.95rem;
         padding:8px 6px;
       }
-      .grid-3,.flight-grid{gap:8px}
+      .grid-3{gap:8px}
+      .btn-flight{
+        min-width:90px;
+        min-height:58px;
+        font-size:.9rem;
+      }
     }
   </style>
 </head>
@@ -276,7 +286,6 @@
 
     <div class="card">
       <h1>Diagnostic Ball Flight</h1>
-      <p class="lead">Lecture simple pour tes élèves : <strong>direction du coup observé</strong> + <strong>forme du coup</strong> = causes les plus probables.</p>
       <p class="note">Rappel clé : la direction initiale dépend surtout de la face, alors que la courbure dépend surtout de la relation face / swing path.</p>
     </div>
 
@@ -299,18 +308,14 @@
 
     <div class="card">
       <h2>2) Forme du coup / ball flight</h2>
-      <div class="flight-grid" id="flightGrid">
+      <div class="flight-row" id="flightGrid">
         <button class="btn btn-flight red" type="button">Pull</button>
         <button class="btn btn-flight red" type="button">Hook</button>
-        <button class="btn btn-flight red" type="button">Push</button>
-
         <button class="btn btn-flight yellow" type="button">Draw</button>
         <button class="btn btn-flight green" type="button">Droite</button>
         <button class="btn btn-flight yellow" type="button">Fade</button>
-
-        <div></div>
         <button class="btn btn-flight red" type="button">Slice</button>
-        <div></div>
+        <button class="btn btn-flight red" type="button">Push</button>
       </div>
       <p class="legend">Vert = neutre. Jaune = courbe contrôlée. Rouge = erreur ou courbe excessive.</p>
     </div>
