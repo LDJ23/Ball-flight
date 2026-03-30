@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic Ball Flight</title>
 
+<style>
+body {
+  font-family: -apple-system, sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h3 {
+  margin-top: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+button {
+  padding: 15px;
+  border-radius: 12px;
+  border: 2px solid #ccc;
+  background: white;
+  font-size: 14px;
+}
+
+button.active {
+  border-color: green;
+  background: #eaffea;
+}
+
+.result {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 20px;
+  line-height: 1.5;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Diagnostic Ball Flight</h1>
+
+<h3>1) Direction de départ (face)</h3>
+<div class="grid" id="startGrid">
+<button>Haut gauche</button>
+<button>Haut centre</button>
+<button>Haut droite</button>
+<button>Milieu gauche</button>
+<button>Milieu centre</button>
+<button>Milieu droite</button>
+<button>Bas gauche</button>
+<button>Bas centre</button>
+<button>Bas droite</button>
+</div>
+
+<h3>2) Ball flight (relation face / path)</h3>
+<div class="grid" id="flightGrid">
+<button>Hook</button>
+<button>Draw</button>
+<button>Droite</button>
+<button>Fade</button>
+<button>Slice</button>
+</div>
+
+<div class="result" id="result">
+Choisis une direction ET un ball flight
+</div>
+
+<script>
+let start = "";
+let flight = "";
+
+document.querySelectorAll("#startGrid button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#startGrid button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    start = btn.innerText;
+    update();
+  };
+});
+
+document.querySelectorAll("#flightGrid button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#flightGrid button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    flight = btn.innerText;
+    update();
+  };
+});
+
+function update() {
+  if (!start || !flight) return;
+
+  let text = "";
+
+  if (flight === "Slice") {
+    text = `
+    <b>Ball flight : Slice</b><br><br>
+    <b>Causes probables :</b><br>
+    • Face ouverte à l’impact<br>
+    • Swing path extérieur → intérieur<br>
+    • Over the top très probable<br><br>
+    <b>Questions à te poser :</b><br>
+    • Est-ce que je coupe la balle ?<br>
+    • Est-ce que ma face reste ouverte ?<br>
+    • Est-ce que je descends trop par-dessus ?
+    `;
+  }
+
+  if (flight === "Hook") {
+    text = `
+    <b>Ball flight : Hook</b><br><br>
+    <b>Causes probables :</b><br>
+    • Face fermée à l’impact<br>
+    • Swing path intérieur → extérieur fort<br><br>
+    <b>Questions :</b><br>
+    • Est-ce que je ferme trop la face ?<br>
+    • Est-ce que mon path est trop intérieur ?
+    `;
+  }
+
+  if (flight === "Fade") {
+    text = `
+    <b>Ball flight : Fade</b><br><br>
+    <b>Causes probables :</b><br>
+    • Face légèrement ouverte<br>
+    • Swing path légèrement extérieur → intérieur
+    `;
+  }
+
+  if (flight === "Draw") {
+    text = `
+    <b>Ball flight : Draw</b><br><br>
+    <b>Causes probables :</b><br>
+    • Face légèrement fermée<br>
+    • Swing path intérieur → extérieur
+    `;
+  }
+
+  if (flight === "Droite") {
+    text = `
+    <b>Ball flight : Droit</b><br><br>
+    <b>Causes probables :</b><br>
+    • Face et swing path alignés<br><br>
+    👉 Bon contrôle global
+    `;
+  }
+
+  document.getElementById("result").innerHTML = text;
+}
+</script>
+
+</body>
+</html>
