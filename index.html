@@ -2,168 +2,316 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Diagnostic Ball Flight</title>
-
 <style>
-body {
-  font-family: -apple-system, sans-serif;
-  background: #f5f5f5;
-  padding: 20px;
-  margin: 0;
+:root{
+  --bg:#f3f6f2;
+  --card:#ffffff;
+  --text:#17321f;
+  --muted:#5f7066;
+  --border:#d7e2d8;
+  --green-bg:#e7f6ea;
+  --green-bd:#2e7d32;
+  --yellow-bg:#fff7db;
+  --yellow-bd:#d4a100;
+  --red-bg:#fde8e8;
+  --red-bd:#c62828;
 }
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
 }
-
-h3 {
-  margin-top: 20px;
+body{padding:12px}
+.wrap{max-width:760px;margin:0 auto}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.04);
 }
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+h1{margin:0 0 8px;font-size:1.55rem;line-height:1.1}
+h2{margin:0 0 10px;font-size:1.15rem}
+p{margin:0;line-height:1.45;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.flight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.btn{
+  width:100%;
+  min-height:68px;
+  border:2px solid var(--border);
+  border-radius:16px;
+  background:#fbfdfb;
+  color:var(--text);
+  font-size:1.02rem;
+  font-weight:700;
+  padding:10px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
 }
-
-button {
-  padding: 15px;
-  border-radius: 12px;
-  border: 2px solid #ccc;
-  background: white;
-  font-size: 14px;
+.btn.active-zone{
+  background:#edf7ef;
+  border-color:#6ca874;
 }
-
-button.active {
-  border-color: green;
-  background: #eaffea;
+.btn.active-flight.green{
+  background:var(--green-bg);
+  border-color:var(--green-bd);
+  color:#1f5e28;
 }
-
-.result {
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  margin-top: 20px;
-  line-height: 1.5;
+.btn.active-flight.yellow{
+  background:var(--yellow-bg);
+  border-color:var(--yellow-bd);
+  color:#8a6900;
+}
+.btn.active-flight.red{
+  background:var(--red-bg);
+  border-color:var(--red-bd);
+  color:#9b1d1d;
+}
+.result{line-height:1.5}
+.tag{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  margin:0 6px 8px 0;
+  font-size:.82rem;
+  font-weight:700;
+  background:#f1f6f2;
+  border:1px solid var(--border);
+}
+.section{margin-top:12px}
+ul{margin:8px 0 0 0;padding-left:18px}
+li{margin:6px 0}
+.callout{
+  margin-top:12px;
+  padding:12px;
+  border-radius:14px;
+  background:#f7faf8;
+  border:1px solid var(--border);
+}
+.small{margin-top:8px;font-size:.9rem}
+.reset{
+  margin-top:12px;
+  width:100%;
+  min-height:50px;
+  border:none;
+  border-radius:14px;
+  background:#eaf1eb;
+  color:var(--text);
+  font-size:1rem;
+  font-weight:700;
+  cursor:pointer;
+}
+@media (max-width: 480px){
+  body{padding:10px}
+  .card{padding:12px;border-radius:16px}
+  h1{font-size:1.35rem}
+  h2{font-size:1.05rem}
+  .btn{
+    min-height:60px;
+    font-size:.97rem;
+    border-radius:14px;
+    padding:8px 6px;
+  }
+  .grid,.flight-grid{gap:7px}
 }
 </style>
 </head>
-
 <body>
+<div class="wrap">
 
-<h1>Diagnostic Ball Flight</h1>
+  <div class="card">
+    <h1>Diagnostic Ball Flight</h1>
+    <p>Départ = face. Courbure = relation face / swing path.</p>
+  </div>
 
-<h3>1) Direction de départ (face)</h3>
-<div class="grid" id="startGrid">
-<button>Haut gauche</button>
-<button>Haut centre</button>
-<button>Haut droite</button>
-<button>Milieu gauche</button>
-<button>Milieu centre</button>
-<button>Milieu droite</button>
-<button>Bas gauche</button>
-<button>Bas centre</button>
-<button>Bas droite</button>
-</div>
+  <div class="card">
+    <h2>1) Direction de départ</h2>
+    <div class="grid" id="startGrid">
+      <button class="btn" type="button">Haut gauche</button>
+      <button class="btn" type="button">Haut centre</button>
+      <button class="btn" type="button">Haut droite</button>
+      <button class="btn" type="button">Milieu gauche</button>
+      <button class="btn" type="button">Milieu centre</button>
+      <button class="btn" type="button">Milieu droite</button>
+      <button class="btn" type="button">Bas gauche</button>
+      <button class="btn" type="button">Bas centre</button>
+      <button class="btn" type="button">Bas droite</button>
+    </div>
+  </div>
 
-<h3>2) Ball flight (relation face / path)</h3>
-<div class="grid" id="flightGrid">
-<button>Hook</button>
-<button>Draw</button>
-<button>Droite</button>
-<button>Fade</button>
-<button>Slice</button>
-</div>
+  <div class="card">
+    <h2>2) Ball flight</h2>
+    <div class="flight-grid" id="flightGrid">
+      <button class="btn red" type="button">Hook</button>
+      <button class="btn yellow" type="button">Draw</button>
+      <button class="btn green" type="button">Droite</button>
+      <button class="btn yellow" type="button">Fade</button>
+      <button class="btn red" type="button">Slice</button>
+    </div>
+    <p class="small">Couleurs au clic : vert = droit, jaune = fade/draw, rouge = hook/slice.</p>
+  </div>
 
-<div class="result" id="result">
-Choisis une direction ET un ball flight
+  <div class="card result" id="result">
+    Choisis une direction et un ball flight.
+  </div>
+
+  <button class="reset" id="resetBtn" type="button">Réinitialiser</button>
+
 </div>
 
 <script>
 let start = "";
 let flight = "";
 
-document.querySelectorAll("#startGrid button").forEach(btn => {
+document.querySelectorAll("#startGrid .btn").forEach(btn => {
   btn.onclick = () => {
-    document.querySelectorAll("#startGrid button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+    document.querySelectorAll("#startGrid .btn").forEach(b => b.classList.remove("active-zone"));
+    btn.classList.add("active-zone");
     start = btn.innerText;
     update();
   };
 });
 
-document.querySelectorAll("#flightGrid button").forEach(btn => {
+document.querySelectorAll("#flightGrid .btn").forEach(btn => {
   btn.onclick = () => {
-    document.querySelectorAll("#flightGrid button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+    document.querySelectorAll("#flightGrid .btn").forEach(b => b.classList.remove("active-flight"));
+    btn.classList.add("active-flight");
     flight = btn.innerText;
     update();
   };
 });
 
+document.getElementById("resetBtn").onclick = () => {
+  start = "";
+  flight = "";
+  document.querySelectorAll("#startGrid .btn").forEach(b => b.classList.remove("active-zone"));
+  document.querySelectorAll("#flightGrid .btn").forEach(b => b.classList.remove("active-flight"));
+  document.getElementById("result").innerHTML = "Choisis une direction et un ball flight.";
+};
+
 function update() {
-  if (!start || !flight) return;
+  if (!start || !flight) {
+    document.getElementById("result").innerHTML = "Choisis une direction et un ball flight.";
+    return;
+  }
 
   let text = "";
 
   if (flight === "Slice") {
     text = `
-    <b>Ball flight : Slice</b><br><br>
-    <b>Causes probables :</b><br>
-    • Face ouverte à l’impact<br>
-    • Swing path extérieur → intérieur<br>
-    • Over the top très probable<br><br>
-    <b>Questions à te poser :</b><br>
-    • Est-ce que je coupe la balle ?<br>
-    • Est-ce que ma face reste ouverte ?<br>
-    • Est-ce que je descends trop par-dessus ?
+    <h2>Diagnostic</h2>
+    <div class="tag">${start}</div><div class="tag">Slice</div>
+    <div class="section"><strong>Causes probables :</strong>
+      <ul>
+        <li>Face ouverte à l’impact</li>
+        <li>Swing path extérieur → intérieur</li>
+        <li>Over the top très probable</li>
+      </ul>
+    </div>
+    <div class="section"><strong>Questions à te poser :</strong>
+      <ul>
+        <li>Est-ce que je coupe la balle ?</li>
+        <li>Est-ce que ma face reste ouverte ?</li>
+        <li>Est-ce que je descends trop par-dessus ?</li>
+      </ul>
+    </div>
+    <div class="callout"><strong>Piste :</strong> Réduire le over the top et apprendre à présenter une face moins ouverte.</div>
     `;
   }
 
   if (flight === "Hook") {
     text = `
-    <b>Ball flight : Hook</b><br><br>
-    <b>Causes probables :</b><br>
-    • Face fermée à l’impact<br>
-    • Swing path intérieur → extérieur fort<br><br>
-    <b>Questions :</b><br>
-    • Est-ce que je ferme trop la face ?<br>
-    • Est-ce que mon path est trop intérieur ?
+    <h2>Diagnostic</h2>
+    <div class="tag">${start}</div><div class="tag">Hook</div>
+    <div class="section"><strong>Causes probables :</strong>
+      <ul>
+        <li>Face fermée à l’impact</li>
+        <li>Swing path intérieur → extérieur fort</li>
+        <li>Fermeture de face trop rapide</li>
+      </ul>
+    </div>
+    <div class="section"><strong>Questions à te poser :</strong>
+      <ul>
+        <li>Est-ce que je ferme trop la face ?</li>
+        <li>Est-ce que mon path est trop intérieur ?</li>
+        <li>Mes mains tournent-elles trop vite ?</li>
+      </ul>
+    </div>
+    <div class="callout"><strong>Piste :</strong> Stabiliser la face et réduire l’excès de path intérieur → extérieur.</div>
     `;
   }
 
   if (flight === "Fade") {
     text = `
-    <b>Ball flight : Fade</b><br><br>
-    <b>Causes probables :</b><br>
-    • Face légèrement ouverte<br>
-    • Swing path légèrement extérieur → intérieur
+    <h2>Diagnostic</h2>
+    <div class="tag">${start}</div><div class="tag">Fade</div>
+    <div class="section"><strong>Causes probables :</strong>
+      <ul>
+        <li>Face légèrement ouverte</li>
+        <li>Swing path légèrement extérieur → intérieur</li>
+      </ul>
+    </div>
+    <div class="section"><strong>Questions à te poser :</strong>
+      <ul>
+        <li>Mon fade est-il contrôlé ?</li>
+        <li>Mon path va-t-il un peu vers la gauche ?</li>
+      </ul>
+    </div>
+    <div class="callout"><strong>Piste :</strong> Garder une petite différence face / path sans l’exagérer.</div>
     `;
   }
 
   if (flight === "Draw") {
     text = `
-    <b>Ball flight : Draw</b><br><br>
-    <b>Causes probables :</b><br>
-    • Face légèrement fermée<br>
-    • Swing path intérieur → extérieur
+    <h2>Diagnostic</h2>
+    <div class="tag">${start}</div><div class="tag">Draw</div>
+    <div class="section"><strong>Causes probables :</strong>
+      <ul>
+        <li>Face légèrement fermée par rapport au path</li>
+        <li>Swing path intérieur → extérieur</li>
+      </ul>
+    </div>
+    <div class="section"><strong>Questions à te poser :</strong>
+      <ul>
+        <li>Le club vient-il un peu de l’intérieur ?</li>
+        <li>Mon draw est-il contrôlé ou trop prononcé ?</li>
+      </ul>
+    </div>
+    <div class="callout"><strong>Piste :</strong> Garder un path intérieur → extérieur modéré avec une face stable.</div>
     `;
   }
 
   if (flight === "Droite") {
     text = `
-    <b>Ball flight : Droit</b><br><br>
-    <b>Causes probables :</b><br>
-    • Face et swing path alignés<br><br>
-    👉 Bon contrôle global
+    <h2>Diagnostic</h2>
+    <div class="tag">${start}</div><div class="tag">Droite</div>
+    <div class="section"><strong>Causes probables :</strong>
+      <ul>
+        <li>Face et swing path bien alignés</li>
+        <li>Bon contrôle global de l’impact</li>
+      </ul>
+    </div>
+    <div class="section"><strong>Questions à te poser :</strong>
+      <ul>
+        <li>Qu’est-ce que j’ai bien fait sur ce coup ?</li>
+        <li>Puis-je reproduire cette sensation ?</li>
+      </ul>
+    </div>
+    <div class="callout"><strong>Piste :</strong> Mémoriser la sensation du bon coup et la routine associée.</div>
     `;
   }
 
   document.getElementById("result").innerHTML = text;
 }
 </script>
-
 </body>
 </html>
